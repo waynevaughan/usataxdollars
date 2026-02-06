@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+:root {
+  --navy: #1a2744;
+  --navy-light: #243456;
+  --red: #c0392b;
+  --red-dark: #a93226;
+  --gold: #d4a84b;
+  --blue-accent: #3b82f6;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--navy);
+  color: #fff;
+}
+
+input[type="text"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4);
+}
