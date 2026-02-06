@@ -7,30 +7,30 @@ const PieChart = dynamic(() => import("./PieChart"), { ssr: false });
 
 /* ── FY 2026 Budget (OMB estimates) ── */
 const CATEGORIES = [
-  { name: "Social Security", pct: 21.0, tip: "Social Security Benefits" },
-  { name: "Medicare", pct: 14.8, tip: "Medicare Benefits" },
-  { name: "National Defense", pct: 13.0, tip: "Military Personnel, Operations, Procurement, R&D" },
-  { name: "Net Interest", pct: 13.5, tip: "Interest on the national debt" },
-  { name: "Health", pct: 10.2, tip: "Medicaid, health care services, research" },
-  { name: "Income Security", pct: 9.0, tip: "Unemployment, housing, food assistance, disability" },
-  { name: "Veterans Benefits", pct: 4.8, tip: "VA healthcare, education, disability" },
-  { name: "Education & Training", pct: 2.0, tip: "K-12, higher education, job training" },
-  { name: "Transportation", pct: 1.9, tip: "Highways, aviation, transit, rail" },
-  { name: "International Affairs", pct: 1.2, tip: "Foreign aid, diplomacy, security assistance" },
-  { name: "Administration of Justice", pct: 1.1, tip: "FBI, courts, prisons, law enforcement" },
-  { name: "Science & Space", pct: 0.9, tip: "NASA, NSF, basic research" },
-  { name: "Natural Resources", pct: 0.8, tip: "EPA, parks, conservation, water" },
-  { name: "Community Development", pct: 0.6, tip: "FEMA, regional development, disaster relief" },
-  { name: "Agriculture", pct: 0.5, tip: "Farm subsidies, agricultural research" },
-  { name: "General Government", pct: 0.5, tip: "Congress, White House, IRS, GSA" },
-  { name: "Energy", pct: 0.2, tip: "DOE, energy programs, nuclear security" },
-  { name: "Other", pct: 4.0, tip: "Miscellaneous and offsetting receipts" },
+  { name: "Social Security", pct: 21.0, tip: "Social Security retirement, disability, and survivor benefits" },
+  { name: "Medicare", pct: 14.8, tip: "Medicare hospital, outpatient, and prescription drug coverage" },
+  { name: "Net Interest", pct: 13.5, tip: "Interest payments on the national debt" },
+  { name: "National Defense", pct: 13.0, tip: "Military personnel, operations, procurement, and R&D" },
+  { name: "Health", pct: 10.2, tip: "Medicaid, CHIP, health care services, and research" },
+  { name: "Income Security", pct: 9.0, tip: "Unemployment, housing, food assistance, and disability" },
+  { name: "Veterans Benefits", pct: 4.8, tip: "VA healthcare, education, disability compensation" },
+  { name: "Education & Training", pct: 2.0, tip: "K-12, higher education, and job training" },
+  { name: "Transportation", pct: 1.9, tip: "Highways, aviation, transit, and rail" },
+  { name: "International Affairs", pct: 1.2, tip: "Foreign aid, diplomacy, and security assistance" },
+  { name: "Administration of Justice", pct: 1.1, tip: "FBI, federal courts, prisons, and law enforcement" },
+  { name: "Science & Space", pct: 0.9, tip: "NASA, NSF, and basic research" },
+  { name: "Natural Resources", pct: 0.8, tip: "EPA, national parks, conservation, and water" },
+  { name: "Community Development", pct: 0.6, tip: "FEMA, regional development, and disaster relief" },
+  { name: "Agriculture", pct: 0.5, tip: "Farm subsidies and agricultural research" },
+  { name: "General Government", pct: 0.5, tip: "Congress, White House, IRS, and GSA" },
+  { name: "Energy", pct: 0.2, tip: "DOE, energy programs, and nuclear security" },
+  { name: "Other", pct: 4.0, tip: "Miscellaneous programs and offsetting receipts" },
 ];
 
 const COLORS = [
-  "#c0392b", "#3498db", "#2c3e50", "#e67e22", "#27ae60",
-  "#f39c12", "#8e44ad", "#1abc9c", "#d35400", "#2980b9",
-  "#e74c3c", "#16a085", "#7f8c8d", "#f1c40f", "#9b59b6",
+  "#c0392b", "#2980b9", "#e67e22", "#2c3e50", "#27ae60",
+  "#f39c12", "#8e44ad", "#16a085", "#d35400", "#3498db",
+  "#e74c3c", "#1abc9c", "#7f8c8d", "#f1c40f", "#9b59b6",
   "#34495e", "#e74c3c", "#95a5a6",
 ];
 
@@ -84,16 +84,18 @@ export default function Home() {
       items: CATEGORIES.map((c) => ({ ...c, amount: (c.pct / 100) * tax })),
     });
     setTimeout(() => {
-      document.getElementById("results")?.scrollIntoView({ behavior: "smooth" });
+      document.getElementById("results")?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 50);
   }
 
   const pieData = result?.items.map((item, i) => ({
     name: item.name,
     value: item.amount,
+    pct: item.pct,
     color: COLORS[i],
   }));
 
+  /* Top 7 for legend, rest collapsed */
   const topItems = result
     ? [...result.items].sort((a, b) => b.amount - a.amount).slice(0, 7)
     : [];
@@ -106,128 +108,146 @@ export default function Home() {
       {/* Flag */}
       <div className="flag-banner" />
 
+      {/* Star ribbon */}
+      <div className="star-ribbon">★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★</div>
+
       {/* Header */}
       <header className="site-header">
-        <h1>USA<span className="red">Tax</span>Dollars</h1>
-        <span className="star-divider" />
-        <nav>
+        <div className="header-badge">
+          <h1>USATaxDollars</h1>
+          <span className="star-accent">★</span>
+        </div>
+        <br />
+        <nav className="header-nav">
           <a href="/about">About</a>
         </nav>
       </header>
 
-      {/* Tagline */}
-      <p className="tagline">
-        Find out how the Government{" "}
-        <span className="accent">spends all those taxes</span>{" "}
-        they take out of your paycheck!
-      </p>
+      {/* Content Panel */}
+      <div className="content-panel">
+        {/* Tagline */}
+        <p className="tagline">
+          Find out how the Government{" "}
+          <span className="accent">spends all those taxes</span>{" "}
+          they take out of your paycheck!
+        </p>
 
-      {/* Form */}
-      <div className="form-section">
-        <form onSubmit={onSubmit} className="income-form">
-          <label>Annual Income</label>
-          <div className="input-wrapper">
-            <span className="dollar">$</span>
+        {/* Form */}
+        <div className="form-wrapper">
+          <form onSubmit={onSubmit} className="income-form">
+            <label>Your Annual Income:</label>
+            <span className="dollar-sign">$</span>
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="100,000"
             />
-          </div>
-          <button type="submit" className="btn-go">Go</button>
-        </form>
-      </div>
+            <button type="submit" className="btn-go">GO!</button>
+          </form>
+        </div>
 
-      {/* Results */}
-      {result && (
-        <div className="results-section" id="results">
-          <div className="tax-summary">
-            <h2>
-              Your Estimated Federal Taxes:{" "}
-              <span className="tax-amount">{fmt(result.tax)}</span>{" "}
-              each year
-            </h2>
-            <p className="sub">
-              That&apos;s <strong>{fmt(result.tax / 52)}</strong> each week
-              {" "}or <strong>{fmt(result.tax / 12)}</strong> per month
-            </p>
-          </div>
-
-          {/* Chart */}
-          <div className="chart-section">
-            <div className="chart-header">
-              How the Federal Government Spends Your Money
+        {/* Results */}
+        {result && (
+          <div className="results-section" id="results">
+            <div className="tax-summary">
+              <h2>
+                Your Estimated Federal Taxes:{" "}
+                <span className="tax-amount">{fmt(result.tax)}</span>{" "}
+                each year
+              </h2>
+              <p className="sub">
+                That&apos;s <strong>{fmt(result.tax / 52)}</strong> each week
+                {" "}or <strong>{fmt(result.tax / 12)}</strong> per month
+              </p>
             </div>
-            <div className="chart-body">
-              <div className="chart-container">
-                {pieData && <PieChart data={pieData} />}
-              </div>
-              <div className="chart-legend">
-                {topItems.map((item) => (
-                  <div key={item.name} className="legend-item">
-                    <span
-                      className="legend-swatch"
-                      style={{ backgroundColor: COLORS[CATEGORIES.findIndex(c => c.name === item.name)] }}
-                    />
-                    <span className="legend-name">{item.name}</span>
-                    <span className="legend-value">{fmt(item.amount)}</span>
+
+            <div className="star-separator">☆ ☆ ☆</div>
+
+            {/* Chart */}
+            <div className="content-inner">
+              <div className="chart-section">
+                <div className="section-header">
+                  How the Federal Government Spends Your Money
+                </div>
+                <div className="chart-body">
+                  <div className="chart-container">
+                    {pieData && <PieChart data={pieData} />}
                   </div>
-                ))}
-                <div className="legend-item">
-                  <span className="legend-swatch" style={{ backgroundColor: "#95a5a6" }} />
-                  <span className="legend-name">Everything Else</span>
-                  <span className="legend-value">{fmt(otherTotal)}</span>
+                  <div className="chart-legend">
+                    {topItems.map((item) => (
+                      <div key={item.name} className="legend-item">
+                        <span
+                          className="legend-swatch"
+                          style={{ backgroundColor: COLORS[CATEGORIES.findIndex(c => c.name === item.name)] }}
+                        />
+                        <span className="legend-name">{item.name}</span>
+                        <span className="legend-value">{fmt(item.amount)}</span>
+                      </div>
+                    ))}
+                    <div className="legend-item">
+                      <span className="legend-swatch" style={{ backgroundColor: "#bdc3c7" }} />
+                      <span className="legend-name">Everything Else</span>
+                      <span className="legend-value">{fmt(otherTotal)}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
+
+              {/* Table */}
+              <div className="breakdown-section">
+                <div className="section-header">Detailed Breakdown</div>
+                <table className="breakdown-table">
+                  <thead>
+                    <tr>
+                      <th>Category</th>
+                      <th>Percentage</th>
+                      <th>Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {result.items.map((item) => (
+                      <tr key={item.name}>
+                        <td>
+                          {item.name}
+                          <span className="tip" title={item.tip}>?</span>
+                        </td>
+                        <td>{item.pct.toFixed(2)}%</td>
+                        <td>{fmt(item.amount)}</td>
+                      </tr>
+                    ))}
+                    <tr className="total-row">
+                      <td>Total</td>
+                      <td>100%</td>
+                      <td>{fmt(result.tax)}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
 
-          {/* Table */}
-          <div className="breakdown-section">
-            <table className="breakdown-table">
-              <thead>
-                <tr>
-                  <th>Category</th>
-                  <th>Share</th>
-                  <th>Amount</th>
-                </tr>
-              </thead>
-              <tbody>
-                {result.items.map((item) => (
-                  <tr key={item.name}>
-                    <td>
-                      {item.name}
-                      <span className="tip" title={item.tip}>ⓘ</span>
-                    </td>
-                    <td>{item.pct.toFixed(1)}%</td>
-                    <td>{fmt(item.amount)}</td>
-                  </tr>
-                ))}
-                <tr className="total-row">
-                  <td>Total</td>
-                  <td>100%</td>
-                  <td>{fmt(result.tax)}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+            {/* Source */}
+            <div className="source-note">
+              <h3>Wait a minute! Where are you getting your numbers?</h3>
+              <p>
+                From the{" "}
+                <a href="https://www.whitehouse.gov/omb/budget/" target="_blank" rel="noopener noreferrer">
+                  Office of Management and Budget
+                </a>{" "}
+                (they put out{" "}
+                <a href="https://www.gpo.gov/fdsys/browse/collectionGPO.action?collectionCode=BUDGET" target="_blank" rel="noopener noreferrer">
+                  official budget numbers
+                </a>
+                ). We&apos;ve taken their data, simplified it, and done the math for you
+                so it&apos;s easy. We understand it&apos;s not 100% accurate but we&apos;re just
+                trying to give everyone an idea of where their money&apos;s going.
+              </p>
+            </div>
 
-          {/* Source */}
-          <div className="source-note">
-            <h3>Where do these numbers come from?</h3>
-            <p>
-              Budget percentages are based on{" "}
-              <a href="https://www.whitehouse.gov/omb/budget/" target="_blank" rel="noopener noreferrer">
-                Office of Management and Budget
-              </a>{" "}
-              FY 2026 estimates. Tax calculations use estimated 2026 brackets with the standard
-              deduction, plus FICA (Social Security & Medicare). This is a simplified estimate —
-              actual taxes depend on filing status, deductions, and credits.
-            </p>
+            <div className="star-separator">☆ ☆ ☆</div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Footer */}
       <footer className="site-footer">
@@ -239,7 +259,7 @@ export default function Home() {
             Share on Facebook
           </a>
         </div>
-        <p className="copyright">© {new Date().getFullYear()} USATaxDollars.com</p>
+        <p className="copyright">© {new Date().getFullYear()} USATaxDollars.com. All rights reserved.</p>
       </footer>
     </>
   );

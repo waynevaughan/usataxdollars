@@ -6,6 +6,7 @@ import * as d3 from "d3";
 interface Slice {
   name: string;
   value: number;
+  pct: number;
   color: string;
 }
 
@@ -22,7 +23,7 @@ export default function PieChart({ data }: { data: Slice[] }) {
     const width = svgRef.current.clientWidth;
     const height = svgRef.current.clientHeight;
     const radius = Math.min(width, height) / 2;
-    const innerRadius = radius * 0.45;
+    const innerRadius = radius * 0.42;
 
     const g = svg
       .append("g")
@@ -32,45 +33,41 @@ export default function PieChart({ data }: { data: Slice[] }) {
       .pie<Slice>()
       .value((d) => d.value)
       .sort(null)
-      .padAngle(0.015);
+      .padAngle(0.012);
 
     const arc = d3
       .arc<d3.PieArcDatum<Slice>>()
       .innerRadius(innerRadius)
-      .outerRadius(radius - 4)
-      .cornerRadius(3);
+      .outerRadius(radius - 2)
+      .cornerRadius(2);
 
     const arcHover = d3
       .arc<d3.PieArcDatum<Slice>>()
-      .innerRadius(innerRadius)
-      .outerRadius(radius + 4)
-      .cornerRadius(3);
+      .innerRadius(innerRadius - 2)
+      .outerRadius(radius + 6)
+      .cornerRadius(2);
 
     const tooltip = d3.select(tooltipRef.current);
 
     const fmt = (n: number) =>
       "$" + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
-    const arcs = g
-      .selectAll("path")
+    g.selectAll("path")
       .data(pie(data))
       .enter()
       .append("path")
       .attr("d", arc)
       .attr("fill", (d) => d.data.color)
-      .attr("stroke", "rgba(10,22,40,0.6)")
-      .attr("stroke-width", 1)
+      .attr("stroke", "#fff")
+      .attr("stroke-width", 1.5)
       .style("cursor", "pointer")
-      .style("transition", "opacity 0.15s");
-
-    arcs
       .on("mouseenter", function (event, d) {
         d3.select(this).transition().duration(150).attr("d", arcHover as any);
         tooltip
           .classed("visible", true)
           .html(
             `<div class="tt-name">${d.data.name}</div>` +
-            `<div class="tt-value">${fmt(d.data.value)} (${((d.data.value / d3.sum(data, (x) => x.value)) * 100).toFixed(1)}%)</div>`
+            `<div class="tt-pct">${fmt(d.data.value)} · ${d.data.pct.toFixed(1)}%</div>`
           );
       })
       .on("mousemove", function (event) {
@@ -83,23 +80,25 @@ export default function PieChart({ data }: { data: Slice[] }) {
         tooltip.classed("visible", false);
       });
 
-    /* Center label */
+    /* Center text */
     g.append("text")
       .attr("text-anchor", "middle")
-      .attr("dy", "-0.2em")
-      .attr("fill", "rgba(255,255,255,0.5)")
-      .attr("font-size", "11px")
-      .attr("font-weight", "600")
-      .attr("letter-spacing", "1.5px")
+      .attr("dy", "-0.1em")
+      .attr("fill", "#999")
+      .attr("font-size", "10px")
+      .attr("font-weight", "700")
+      .attr("letter-spacing", "2px")
+      .attr("font-family", "Inter, sans-serif")
       .text("YOUR");
 
     g.append("text")
       .attr("text-anchor", "middle")
-      .attr("dy", "1em")
-      .attr("fill", "rgba(255,255,255,0.5)")
-      .attr("font-size", "11px")
-      .attr("font-weight", "600")
-      .attr("letter-spacing", "1.5px")
+      .attr("dy", "1.1em")
+      .attr("fill", "#999")
+      .attr("font-size", "10px")
+      .attr("font-weight", "700")
+      .attr("letter-spacing", "2px")
+      .attr("font-family", "Inter, sans-serif")
       .text("TAXES");
 
   }, [data]);
